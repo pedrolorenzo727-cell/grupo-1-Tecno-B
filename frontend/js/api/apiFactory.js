@@ -32,6 +32,15 @@ export function createAPI(moduleName, config = {})
             if (!res.ok) throw new Error("No se pudieron obtener los datos");
             return await res.json();
         },
+        //2.0
+        async fetchPaginated(page = 1, limit = 10)
+        {
+            const url = `${API_URL}&page=${page}&limit=${limit}`;
+            const res = await fetch(url);
+            if (!res.ok)
+                throw new Error("Error al obtener datos paginados");
+            return await res.json();
+        },
         async create(data)
         {
             return await sendJSON('POST', data);

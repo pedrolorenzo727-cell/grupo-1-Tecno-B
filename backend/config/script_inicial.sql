@@ -5,7 +5,7 @@ CHARACTER SET utf8
 COLLATE utf8_unicode_ci;
 
 /*Crear usuario de la base de datos*/
-CREATE USER 'student'@'localhost' IDENTIFIED BY '12345';
+CREATE USER IF NOT EXISTS 'student'@'localhost' IDENTIFIED BY '12345';
 
 /*Otorgar todos los permisos sobre la base de datos*/
 GRANT ALL PRIVILEGES ON students.* TO 'student'@'localhost';
