@@ -12,9 +12,3 @@ form input, form button {
     padding: 10px;
     margin-top: 10px;
 }
-
-/*2.0*/
-.selectPages{
-    width:auto;
-    display:inline-block;
-}
