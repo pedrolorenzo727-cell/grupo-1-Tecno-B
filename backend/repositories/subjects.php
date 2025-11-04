@@ -68,14 +68,31 @@ function updateSubject($conn, $id, $name)
 
     return ['updated' => $stmt->affected_rows];
 }
-
+//3.0
 function deleteSubject($conn, $id) 
 {
-    $sql = "DELETE FROM subjects WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+    $sqlCheck = "SELECT COUNT(*) AS total FROM students_subjects WHERE subject_id = ?";
+    $stmtCheck = $conn->prepare($sqlCheck);
+    $stmtCheck->bind_param("i", $id);
+    $stmtCheck->execute();
+    $result = $stmtCheck->get_result();
+    $row = $result->fetch_assoc();
 
-    return ['deleted' => $stmt->affected_rows];
+    if ($row['total'] > 0) {
+        // Tiene estudiantes asignados, no se elimina
+        return [
+            'deleted' => 0,
+            'error' => 'No se puede eliminar la materia porque tiene estudiantes asignados.'
+        ];
+    }
+    else
+    {
+      $sql = "DELETE FROM subjects WHERE id = ?";
+      $stmt = $conn->prepare($sql);
+      $stmt->bind_param("i", $id);
+      $stmt->execute();
+
+      return ['deleted' => $stmt->affected_rows];
+    }
 }
 ?>
