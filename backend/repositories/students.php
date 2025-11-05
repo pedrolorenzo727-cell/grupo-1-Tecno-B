@@ -62,39 +62,19 @@ function createStudent($conn, $fullname, $email, $age)
     ];
 }
 
-function createStudentValidateMail($conn, $fullname, $email, $age) 
+function validateMail($conn, $email) 
 {
-    $checkSql = "SELECT COUNT(*) FROM students WHERE email = ?";
-    $checkStmt = $conn->prepare($checkSql);
-    $checkStmt->bind_param("s", $email);
-    $checkStmt->execute();
-    $checkStmt->bind_result($count);
-    $checkStmt->fetch();
-    $checkStmt->close();
-
-    if ($count > 0) {
-        return [
-            'inserted' => 0,
-            'id' => null,
-            'message' => 'El email ya está registrado.'
-        ];
-    }
-
-    $sql = "INSERT INTO students (fullname, email, age) VALUES (?, ?, ?)";
+    $sql = "SELECT COUNT(*) FROM students WHERE email = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssi", $fullname, $email, $age);
+    $stmt->bind_param("s", $email);
     $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
 
-    return [
-        'inserted' => $stmt->affected_rows,
-        'id' => $conn->insert_id,
-        'message' => $stmt->affected_rows > 0 
-            ? 'Estudiante insertado correctamente.' 
-            : 'No se insertó el registro.'
-    ];
+    // Si ya existe devuelve 1, si no, 0
+    return $count > 0 ? 1 : 0;
 }
-
-
 
 function updateStudent($conn, $id, $fullname, $email, $age) 
 {
