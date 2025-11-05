@@ -20,9 +20,9 @@ export function createAPI(moduleName, config = {})
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
-
-        if (!res.ok) throw new Error(`Error en ${method}`);
-        return await res.json();
+        const body=await res.json();
+        if (!res.ok) throw new Error(body.error);
+        return body;
     }
 
     return {

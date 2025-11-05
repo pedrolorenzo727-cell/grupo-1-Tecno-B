@@ -161,12 +161,21 @@ async function confirmDeleteSubject(id)
     if (!confirm('¿Seguro que deseas borrar esta materia?')) return;
 
     try
-    {
-        await subjectsAPI.remove(id);
-        loadSubjects();
+    {//3.0
+        const data = await subjectsAPI.remove(id);
+
+        if (data.error) {
+            alert(data.error); 
+        } else if (data.message) {
+            alert(data.message);
+            loadSubjects(); 
+        } else {
+            alert('Ocurrió un error inesperado al eliminar la materia.');
+        }
     }
     catch (err)
     {
-        console.error('Error al borrar materia:', err.message);
+        console.error('Error al borrar materia:', err);
+        alert(err.message);
     }
 }
