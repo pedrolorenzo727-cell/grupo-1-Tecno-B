@@ -75,4 +75,27 @@ function removeStudentSubject($conn, $id)
 
     return ['deleted' => $stmt->affected_rows];
 }
+
+function isStudentAssignedToSubjects($conn, $student_id): bool 
+{
+    // 1. Consulta SQL: Solo cuenta filas y solo necesita encontrar una.
+    $sql = "SELECT 1 FROM students_subjects WHERE student_id = ? LIMIT 1";
+    // Nota: Usamos SELECT 1 en lugar de COUNT(*) porque es marginalmente más rápido 
+    // cuando solo necesitamos saber si existe *algo* y no el total.
+    
+    // 2. Prepara la sentencia: Previene inyección SQL.
+    $stmt = $conn->prepare($sql);
+    
+    // 3. Asocia el parámetro: 'i' indica que el valor es un entero (integer).
+    $stmt->bind_param("i", $student_id);
+    
+    // 4. Ejecuta la consulta.
+    $stmt->execute();
+    
+    // 5. Obtiene el resultado: Usamos store_result() y num_rows para ver si encontró algo.
+    $stmt->store_result(); 
+    
+    // 6. Retorna la verificación: Si el número de filas es > 0, devuelve TRUE (está asignado).
+    return $stmt->num_rows > 0;
+}
 ?>

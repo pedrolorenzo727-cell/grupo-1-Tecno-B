@@ -21,7 +21,30 @@ export function createAPI(moduleName, config = {})
             body: JSON.stringify(data)
         });
 
-        if (!res.ok) throw new Error(`Error en ${method}`);
+        // --- INICIO DE MODIFICACIÓN DE MANEJO DE ERRORES ---
+        if (!res.ok) {
+            // 1. Intentamos leer el JSON del cuerpo (donde está nuestro mensaje de error)
+            const errorData = await res.json().catch(() => ({ message: `Error desconocido en ${method}` }));
+            
+            // 2. Comprobación específica para el error de validación (409)
+            if (res.status === 409) {
+                // Si es 409, devolvemos el objeto de error. NO lanzamos la excepción.
+                // Esto permite que el frontController maneje el modal W3.CSS.
+                return { 
+                    success: false, 
+                    status: 409,
+                    message: errorData.message || "Error de validación de negocio (409)."
+                };
+            }
+            
+            // 3. Para cualquier otro error (400, 500, etc.), lanzamos la excepción
+            // incluyendo el mensaje que el servidor nos devolvió si existe.
+            const errorMessage = errorData.message || errorData.error || `Error ${res.status} en ${method}`;
+            throw new Error(errorMessage); 
+        }
+        // --- FIN DE MODIFICACIÓN DE MANEJO DE ERRORES ---
+        
+        // Si res.ok es true, devuelve el éxito.
         return await res.json();
     }
 
