@@ -33,7 +33,16 @@ function setupFormHandler()
             } 
             else 
             {
-                await studentsAPI.create(student);
+                existe=false;
+                lista = await studentsAPI.fetchAll();
+                lista.forEach(i => {
+                    if (lista[i].email != student.email)
+                        existe=true;
+                })
+                if (!existe)
+                    await studentsAPI.create(student);
+                else
+                    muestraMailNoExiste();
             }
             clearForm();
             loadStudents();
