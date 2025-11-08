@@ -9,6 +9,8 @@
 */
 
 import { subjectsAPI } from '../api/subjectsAPI.js';
+import { showAlert } from '../api/apiFactory.js';
+
 
 //2.0
 //For pagination:
@@ -165,17 +167,17 @@ async function confirmDeleteSubject(id)
         const data = await subjectsAPI.remove(id);
 
         if (data.error) {
-            alert(data.error); 
+            showAlert(data.error); 
         } else if (data.message) {
-            alert(data.message);
+            showAlert(data.message);
             loadSubjects(); 
         } else {
-            alert('Ocurrió un error inesperado al eliminar la materia.');
+            showAlert('Ocurrió un error inesperado al eliminar la materia.');
         }
     }
     catch (err)
     {
         console.error('Error al borrar materia:', err);
-        alert(err.message);
+        showAlert(err.message);
     }
 }
