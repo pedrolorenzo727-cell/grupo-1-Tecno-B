@@ -33,14 +33,18 @@ function setupFormHandler()
             } 
             else 
             {
-                await studentsAPI.create(student);
+                try {await studentsAPI.create(student)}
+                catch (e){
+                    showError("El correo ingresado ya existe. Intente con otro.")
+                    return;}
             }
             clearForm();
             loadStudents();
+            showSuccess('Estudiante guardado correctamente.');
         }
         catch (err)
         {
-            console.error(err.message);
+            showError(err.message || 'Ocurrió un error al procesar la solicitud.');
         }
     });
 }
