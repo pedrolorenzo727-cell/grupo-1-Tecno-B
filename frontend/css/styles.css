@@ -18,3 +18,9 @@ form input, form button {
     width:auto;
     display:inline-block;
 }
+
+
+/*3.0*/
+.modal-width-small {
+    max-width: 400px;
+}

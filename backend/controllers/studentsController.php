@@ -6,14 +6,15 @@
 *    License     : http://www.gnu.org/licenses/gpl.txt  GNU GPL 3.0
 *    Date        : Mayo 2025
 *    Status      : Prototype
-*    Iteration   : 3.0 ( prototype )
+*    Iteration   : 2.0 ( prototype )
 */
 
 require_once("./repositories/students.php");
 
+// Para GET (usamos la variable superglobal $_GET):
+//https://www.php.net/manual/es/language.variables.superglobals.php
 function handleGet($conn) 
 {
-    $input = json_decode(file_get_contents("php://input"), true);
     if (isset($_GET['id'])) 
     {
         $student = getStudentById($conn, $_GET['id']);

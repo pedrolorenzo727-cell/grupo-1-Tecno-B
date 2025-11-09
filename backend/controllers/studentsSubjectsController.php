@@ -6,7 +6,7 @@
 *    License     : http://www.gnu.org/licenses/gpl.txt  GNU GPL 3.0
 *    Date        : Mayo 2025
 *    Status      : Prototype
-*    Iteration   : 3.0 ( prototype )
+*    Iteration   : 1.0 ( prototype )
 */
 
 require_once("./repositories/studentsSubjects.php");
@@ -14,10 +14,11 @@ require_once("./repositories/studentsSubjects.php");
 function handleGet($conn) 
 {
     $input = json_decode(file_get_contents("php://input"), true);
-    if (isset($_GET['id'])) 
+
+    if (isset($input['id'])) 
     {
-        $subjet = getSubjetsByStudent($conn);
-        echo json_encode($subjet);
+        $studentsSubjects = getSubjectById($conn, $input['id']);
+        echo json_encode($subject);
     } 
     //2.0
     else if (isset($_GET['page']) && isset($_GET['limit'])) 
@@ -26,18 +27,18 @@ function handleGet($conn)
         $limit = (int)$_GET['limit'];
         $offset = ($page - 1) * $limit;
 
-        $subjet = getPaginatedSubjets($conn, $limit, $offset);
-        $total = getTotalSubjets($conn);
+        $studentsSubjects = getPaginatedStudentsSubjects($conn, $limit, $offset);
+        $total = getTotalStudentsSubjects($conn);
 
         echo json_encode([
-            'subjets' => $subjet, // ya es array
+            'studentsSubjects' => $studentsSubjects, // ya es array
             'total' => $total        // ya es entero
         ]);
     }
     else
     {
-        $subjets = getAllSubjectsStudents($conn); // ya es array
-        echo json_encode($subjets);
+        $subjects = getAllSubjectsStudents($conn); // ya es array
+        echo json_encode($subjects);
     }
 }
 

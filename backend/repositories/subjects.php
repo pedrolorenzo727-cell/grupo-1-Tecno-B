@@ -16,6 +16,7 @@ function getAllSubjects($conn)
     return $conn->query($sql)->fetch_all(MYSQLI_ASSOC);
 }
 
+
 //2.0
 function getPaginatedSubjects($conn, $limit, $offset) 
 {
@@ -25,7 +26,6 @@ function getPaginatedSubjects($conn, $limit, $offset)
     $result = $stmt->get_result();
     return $result->fetch_all(MYSQLI_ASSOC);
 }
-
 //2.0
 function getTotalSubjects($conn) 
 {
@@ -33,6 +33,7 @@ function getTotalSubjects($conn)
     $result = $conn->query($sql);
     return $result->fetch_assoc()['total'];
 }
+
 
 function getSubjectById($conn, $id) 
 {
@@ -77,5 +78,20 @@ function deleteSubject($conn, $id)
     $stmt->execute();
 
     return ['deleted' => $stmt->affected_rows];
+}
+
+
+
+//TRABAJO PRACTICO GRUPAL 3.0 Ivan Yungblut
+// Busca una materia por su nombre (para validación de duplicados) de forma case insensitive
+// --- VALIDACION BACKEND ---
+function getSubjectByName($conn, $name) {
+    $sql = "SELECT * FROM subjects WHERE UPPER(name) = UPPER(?)"; //case insensitive
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $name);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    return $result->fetch_assoc();
 }
 ?>

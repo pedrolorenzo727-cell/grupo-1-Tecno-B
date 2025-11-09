@@ -5,7 +5,7 @@
 *    License     : http://www.gnu.org/licenses/gpl.txt  GNU GPL 3.0
 *    Date        : Mayo 2025
 *    Status      : Prototype
-*    Iteration   : 3.0 ( prototype )
+*    Iteration   : 2.0 ( prototype )
 */
 
 export function createAPI(moduleName, config = {}) 
@@ -21,8 +21,13 @@ export function createAPI(moduleName, config = {})
             body: JSON.stringify(data)
         });
 
-        if (!res.ok) throw new Error(`Error en ${method}`);
-        return await res.json();
+        const responseData = await res.json();
+        if (!res.ok) {
+            const error = new Error(responseData.error || `Error en ${method}`);
+            error.status = res.status;
+            throw error;
+        }
+        return responseData;
     }
 
     return {

@@ -5,26 +5,25 @@
 *    License     : http://www.gnu.org/licenses/gpl.txt  GNU GPL 3.0
 *    Date        : Mayo 2025
 *    Status      : Prototype
-*    Iteration   : 3.0 ( prototype )
+*    Iteration   : 1.0 ( prototype )
 */
 
-import { studentsAPI } from '../api/studentsAPI.js';
-import { subjectsAPI } from '../api/subjectsAPI.js';
-import { studentsSubjectsAPI } from '../api/studentsSubjectsAPI.js';
+import { studentsAPI } from '../apiConsumers/studentsAPI.js';
+import { subjectsAPI } from '../apiConsumers/subjectsAPI.js';
+import { studentsSubjectsAPI } from '../apiConsumers/studentsSubjectsAPI.js';
 
 //2.0
-//For pagination
+//For pagination:
 let currentPage = 1;
 let totalPages = 1;
 const limit = 5;
 
 document.addEventListener('DOMContentLoaded', () => 
 {
-    console.log("Hola");
     initSelects();
     setupFormHandler();
     setupCancelHandler();
-    loadStudentsSubjets();
+    loadRelations();
     setupPaginationControls();//2.0
 });
 
@@ -106,7 +105,7 @@ function setupPaginationControls()
         if (currentPage > 1) 
         {
             currentPage--;
-            loadStudentsSubjets();
+            loadRelations();
         }
     });
 
@@ -115,14 +114,14 @@ function setupPaginationControls()
         if (currentPage < totalPages) 
         {
             currentPage++;
-            loadStudentsSubjets();
+            loadRelations();
         }
     });
 
     document.getElementById('resultsPerPage').addEventListener('change', e => 
     {
         currentPage = 1;
-        loadStudentsSubjets();
+        loadRelations();
     });
 }
 
@@ -142,49 +141,16 @@ function clearForm()
     document.getElementById('relationId').value = '';
 }
 
-//2.0
-async function loadStudentsSubjets()
+async function loadRelations() 
 {
     try 
     {
         const resPerPage = parseInt(document.getElementById('resultsPerPage').value, 10) || limit;
         const data = await studentsSubjectsAPI.fetchPaginated(currentPage, resPerPage);
         console.log(data);
-        renderRelationsTable(data.subjets);
+        renderRelationsTable(data.studentsSubjects);
         totalPages = Math.ceil(data.total / resPerPage);
         document.getElementById('pageInfo').textContent = `Página ${currentPage} de ${totalPages}`;
-    } 
-    catch (err) 
-    {
-        console.error('Error cargando materias:', err.message);
-    }
-}
-
-async function loadRelations() 
-{
-    try 
-    {
-        const relations = await studentsSubjectsAPI.fetchAll();
-        
-        /**
-         * DEBUG
-         */
-        //console.log(relations);
-
-        /**
-         * En JavaScript: Cualquier string que no esté vacío ("") es considerado truthy.
-         * Entonces "0" (que es el valor que llega desde el backend) es truthy,
-         * ¡aunque conceptualmente sea falso! por eso: 
-         * Se necesita convertir ese string "0" a un número real 
-         * o asegurarte de comparar el valor exactamente. 
-         * Con el siguiente código se convierten todos los string approved a enteros.
-         */
-        relations.forEach(rel => 
-        {
-            rel.approved = Number(rel.approved);
-        });
-        
-        renderRelationsTable(relations);
     } 
     catch (err) 
     {
