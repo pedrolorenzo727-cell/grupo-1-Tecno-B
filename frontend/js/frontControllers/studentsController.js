@@ -5,10 +5,10 @@
 *    License     : http://www.gnu.org/licenses/gpl.txt  GNU GPL 3.0
 *    Date        : Mayo 2025
 *    Status      : Prototype
-*    Iteration   : 3.0 ( prototype )
+*    Iteration   : 2.0 ( prototype )
 */
 
-import { studentsAPI } from '../api/studentsAPI.js';
+import { studentsAPI } from '../apiConsumers/studentsAPI.js';
 
 //2.0
 //For pagination:
@@ -61,6 +61,7 @@ function setupCancelHandler()
     });
 }
 
+//2.0
 function setupPaginationControls() 
 {
     document.getElementById('prevPage').addEventListener('click', () => 
@@ -103,7 +104,8 @@ function clearForm()
     document.getElementById('studentForm').reset();
     document.getElementById('studentId').value = '';
 }
-  
+
+//2.0
 async function loadStudents()
 {
     try 

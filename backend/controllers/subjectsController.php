@@ -14,10 +14,11 @@ require_once("./repositories/subjects.php");
 function handleGet($conn) 
 {
     $input = json_decode(file_get_contents("php://input"), true);
-    if (isset($_GET['id'])) 
+
+    if (isset($input['id'])) 
     {
-        $subjectt = getSubjectById($conn, $_GET['id']);
-        echo json_encode($subjectt);
+        $subjects = getSubjectById($conn, $input['id']);
+        echo json_encode($subject);
     } 
     //2.0
     else if (isset($_GET['page']) && isset($_GET['limit'])) 
@@ -26,34 +27,18 @@ function handleGet($conn)
         $limit = (int)$_GET['limit'];
         $offset = ($page - 1) * $limit;
 
-        $subjectt = getPaginatedSubjects($conn, $limit, $offset);
+        $subjects = getPaginatedSubjects($conn, $limit, $offset);
         $total = getTotalSubjects($conn);
 
         echo json_encode([
-            'subjects' => $subjectt, // ya es array
+            'subjects' => $subjects, // ya es array
             'total' => $total        // ya es entero
         ]);
     }
     else
     {
-        $subjectt = getAllSubjects($conn); // ya es array
-        echo json_encode($subjectt);
-    }
-}
-
-function handlePost($conn) 
-{
-    $input = json_decode(file_get_contents("php://input"), true);
-
-    $result = createSubject($conn, $input['name']);
-    if ($result['inserted'] > 0) 
-    {
-        echo json_encode(["message" => "Materia creada correctamente"]);
-    } 
-    else 
-    {
-        http_response_code(500);
-        echo json_encode(["error" => "No se pudo crear"]);
+        $subjects = getAllSubjects($conn); // ya es array
+        echo json_encode($subjects);
     }
 }
 
@@ -94,5 +79,38 @@ function handleDelete($conn)
         http_response_code(500);
         echo json_encode(["error" => "No se pudo eliminar"]);
       }
+}
+
+
+
+//TRABAJO PRACTICO GRUPAL 3.0 Ivan Yungblut
+// Busca una materia por su nombre (para validación de duplicados) de forma case insensitive
+function handlePost($conn) {
+    $input = json_decode(file_get_contents("php://input"), true);
+    if (empty($input['name'])) {
+        echo json_encode(["error" => "El nombre de la materia es requerido"]);
+        http_response_code(400); // Bad Request
+        return;
+    }
+
+    // --- VALIDACION BACKEND ---
+
+    $existingSubject = getSubjectByName($conn, $input['name']);
+    if ($existingSubject) {
+        echo json_encode(["error" => "La materia ya existe (back)"]);
+        http_response_code(409); // HTTP 409 (Conflict) es el código perfecto para "ya existe"
+        return;
+    }
+
+    // --- VALIDACION BACKEND ---
+    
+    $result = createSubject($conn, $input['name']);
+    if ($result['inserted'] > 0) {
+        echo json_encode(["message" => "Materia creada correctamente"]);
+    } 
+    else {
+        http_response_code(500);
+        echo json_encode(["error" => "No se pudo crear por un error interno"]);
+    }
 }
 ?>

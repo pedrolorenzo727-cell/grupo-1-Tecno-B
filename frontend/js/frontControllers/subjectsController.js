@@ -8,21 +8,25 @@
 *    Iteration   : 3.0 ( prototype )
 */
 
-import { subjectsAPI } from '../api/subjectsAPI.js';
-import { showAlert } from '../api/apiFactory.js';
+import { subjectsAPI } from '../apiConsumers/subjectsAPI.js';
+import { showAlert } from '../apiConsumers/apiFactory.js';
 
 
-//2.0
-//For pagination:
+
+//2.0 paginacion
 let currentPage = 1;
 let totalPages = 1;
 const limit = 5;
+//validacion frontend
+let currentLoadedSubjects = [];
 
 document.addEventListener('DOMContentLoaded', () => 
 {
     loadSubjects();
     setupSubjectFormHandler();
     setupCancelHandler();
+    setupPaginationControls();//2.0
+    setupModalHandlers(); //3.0
 });
 
 function setupSubjectFormHandler() 
@@ -39,12 +43,25 @@ function setupSubjectFormHandler()
 
         try 
         {
-            if (subject.id) 
-            {
+            if (subject.id) {
                 await subjectsAPI.update(subject);
             }
-            else
-            {
+            else {
+                //TRABAJO PRACTICO GRUPAL 3.0 Ivan Yungblut
+                // --- VALIDACION FRONTEND ---
+
+                const newNameUpper = subject.name.toUpperCase();
+        // Comparamos contra la lista que ya tenemos cargada del loadSubjects del DOM
+                const isDuplicate = currentLoadedSubjects.some(
+                    s => s.name.toUpperCase() === newNameUpper
+                );
+                if (isDuplicate) {
+                    //puse (front) para saber si el error se captura por frontend o backend!!!!!!!
+                    showFormError("La materia ya existe (front)");
+                    return;
+                }
+
+                // --- VALIDACION FRONTEND ---
                 await subjectsAPI.create(subject);
             }
             
@@ -54,7 +71,8 @@ function setupSubjectFormHandler()
         }
         catch (err)
         {
-            console.error(err.message);
+            console.error(err.message); // para debugging
+            showFormError(err.message); // modal de error
         }
   });
 }
@@ -68,6 +86,7 @@ function setupCancelHandler()
     });
 }
 
+//2.0
 function setupPaginationControls() 
 {
     document.getElementById('prevPage').addEventListener('click', () => 
@@ -94,7 +113,7 @@ function setupPaginationControls()
         loadSubjects();
     });
 }
-
+//2.0
 async function loadSubjects()
 {
     try 
@@ -102,6 +121,7 @@ async function loadSubjects()
         const resPerPage = parseInt(document.getElementById('resultsPerPage').value, 10) || limit;
         const data = await subjectsAPI.fetchPaginated(currentPage, resPerPage);
         console.log(data);
+        currentLoadedSubjects = data.subjects; //validacion frontend carga la lista
         renderSubjectTable(data.subjects);
         totalPages = Math.ceil(data.total / resPerPage);
         document.getElementById('pageInfo').textContent = `Página ${currentPage} de ${totalPages}`;
@@ -109,6 +129,7 @@ async function loadSubjects()
     catch (err) 
     {
         console.error('Error cargando materias:', err.message);
+        alert(`Error al cargar materias: ${err.message}`);
     }
 }
 
@@ -180,4 +201,31 @@ async function confirmDeleteSubject(id)
         console.error('Error al borrar materia:', err);
         showAlert(err.message);
     }
+}
+
+
+// TRABAJO PRACTICO GRUPAL 3.0 Ivan Yungblut
+// Muestra un mensaje de error en el formulario
+
+function showFormError(message) {
+// 1. Pone el mensaje de error dentro del modal
+    document.getElementById('modalErrorMessage').textContent = message;
+// 2. Muestra el modal
+    document.getElementById('modalError').style.display = 'block';
+}
+
+function setupModalHandlers() {
+    const modal = document.getElementById('modalError');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    }
+    // Cierra el modal si se hace clic fuera
+    window.addEventListener('click', (event) => {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    });
 }

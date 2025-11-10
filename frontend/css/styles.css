@@ -18,7 +18,17 @@ form input, form button {
     width:auto;
     display:inline-block;
 }
-/*3.0*/
+
+
+
+/* 3.0 */
+
+/*3.0 IVAN YUNGBLUT*/
+.modal-width-small {
+    max-width: 400px;
+}
+
+/*3.0 PEDRO LORENZO*/
 #alert-container {
   position: fixed;
   bottom: 30px;

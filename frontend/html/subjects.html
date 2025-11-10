@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon.png">
   <link rel="stylesheet" href="../css/w3.css" />
   <link rel="stylesheet" href="../css/styles.css" />
-  <script type="module" src="../js/controllers/subjectsController.js"></script>
+  <script type="module" src="../js/frontControllers/subjectsController.js"></script>
 </head>
 
 <body class="w3-container">
@@ -30,6 +30,22 @@
       <button id="cancelBtn" class="w3-button w3-grey" type="reset">Cancelar</button>
     </div>
   </form>
+  
+                  <!--3.0 Ivan Yungblut Modal de errores validacion front y back--> 
+  <div id="modalError" class="w3-modal">
+    <div class="w3-modal-content w3-card-4 w3-animate-top modal-width-small">
+      <header class="w3-container w3-red w3-center">
+        <span id="closeModalBtn" class="w3-button w3-display-topright">&times;</span>
+        <h2>Error</h2>
+      </header>
+
+      <div class="w3-container w3-padding">
+        <p id="modalErrorMessage" class="w3-center"></p>
+      </div>
+
+    </div>
+  </div>
+                  <!--3.0 Ivan Yungblut Modal de errores validacion front y back--> 
 
   <table class="w3-table-all w3-hoverable w3-card">
     <thead>
@@ -41,6 +57,7 @@
     <tbody id="subjectTableBody"></tbody>
   </table>
 
+  <!--2.0-->
   <div class="w3-bar w3-center w3-margin-top">
     <button id="prevPage" class="w3-button w3-light-grey">Anterior</button>
     <span id="pageInfo" class="w3-margin-left w3-margin-right">Página 1 de X</span>
@@ -57,5 +74,7 @@
     <a class="w3-btn w3-black" href="../../index.html">Volver al Panel Principal</a>
   </footer>
   
+
+
 </body>
 </html>
