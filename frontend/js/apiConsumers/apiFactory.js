@@ -60,9 +60,9 @@ export function createAPI(moduleName, config = {})
         }
     };
 }
-export function showAlert(message, type = 'error') {
+export function showAlert(message) {
     const alertBox = document.createElement("div");
-    alertBox.className = `alert alert-${type}`;
+    alertBox.className = 'alert';
     alertBox.textContent = message;
     document.body.appendChild(alertBox);
 

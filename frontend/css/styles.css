@@ -29,23 +29,11 @@ form input, form button {
 }
 
 /*3.0 PEDRO LORENZO*/
-#alert-container {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;   
-  width: 90vw;
-  max-width: 500px; 
-}
-
 .alert {
   padding: 12px 20px;
   margin-bottom: 10px; 
   border-radius: 8px;
+  background-color: red;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   font-family: Arial, sans-serif;
   font-size: 1rem;
@@ -53,14 +41,4 @@ form input, form button {
   text-align: center;
   width: 100%; 
   box-sizing: border-box; 
-}
-
-.alert-success {
-  background-color: #4CAF50; /* Verde */
-  color: white;
-}
-
-.alert-error {
-  background-color: #f44336; /* Rojo */
-  color: white;
 }
