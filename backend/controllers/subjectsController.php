@@ -63,15 +63,22 @@ function handleDelete($conn)
     $input = json_decode(file_get_contents("php://input"), true);
     
     $result = deleteSubject($conn, $input['id']);
+    //3.0
+    if (isset($result['error'])) {
+        http_response_code(400); 
+        echo json_encode(["error" => $result['error']]);
+        return;
+    }
+    
     if ($result['deleted'] > 0) 
     {
-        echo json_encode(["message" => "Materia eliminada correctamente"]);
+      echo json_encode(["message" => "Materia eliminada correctamente"]);
     } 
     else 
-    {
+      {
         http_response_code(500);
         echo json_encode(["error" => "No se pudo eliminar"]);
-    }
+      }
 }
 
 

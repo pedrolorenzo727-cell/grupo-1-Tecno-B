@@ -9,6 +9,9 @@
 */
 
 import { subjectsAPI } from '../apiConsumers/subjectsAPI.js';
+import { showAlert } from '../apiConsumers/apiFactory.js';
+
+
 
 //2.0 paginacion
 let currentPage = 1;
@@ -181,14 +184,22 @@ async function confirmDeleteSubject(id)
     if (!confirm('¿Seguro que deseas borrar esta materia?')) return;
 
     try
-    {
-        await subjectsAPI.remove(id);
-        loadSubjects();
+    {//3.0
+        const data = await subjectsAPI.remove(id);
+
+        if (data.error) {
+            showAlert(data.error); 
+        } else if (data.message) {
+            showAlert(data.message);
+            loadSubjects(); 
+        } else {
+            showAlert('Ocurrió un error inesperado al eliminar la materia.');
+        }
     }
     catch (err)
     {
-        console.error('Error al borrar materia:', err.message);
-        alert(`Error al borrar materia: ${err.message}`);
+        console.error('Error al borrar materia:', err);
+        showAlert(err.message);
     }
 }
 

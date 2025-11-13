@@ -60,3 +60,13 @@ export function createAPI(moduleName, config = {})
         }
     };
 }
+export function showAlert(message) {
+    const alertBox = document.createElement("div");
+    alertBox.className = 'alert';
+    alertBox.textContent = message;
+    document.body.appendChild(alertBox);
+
+    setTimeout(() => {
+        alertBox.remove();
+    }, 4000);
+}

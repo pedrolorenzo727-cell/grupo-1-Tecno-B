@@ -20,7 +20,25 @@ form input, form button {
 }
 
 
-/*3.0*/
+
+/* 3.0 */
+
+/*3.0 IVAN YUNGBLUT*/
 .modal-width-small {
     max-width: 400px;
+}
+
+/*3.0 PEDRO LORENZO*/
+.alert {
+  padding: 12px 20px;
+  margin-bottom: 10px; 
+  border-radius: 8px;
+  background-color: red;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  width: 100%; 
+  box-sizing: border-box; 
 }
