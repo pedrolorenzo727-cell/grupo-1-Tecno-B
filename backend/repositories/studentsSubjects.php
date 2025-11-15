@@ -39,6 +39,34 @@ function getAllSubjectsStudents($conn)
     return $conn->query($sql)->fetch_all(MYSQLI_ASSOC);
 }
 
+
+//2.0
+function getPaginatedStudentsSubjects($conn, $limit, $offset) 
+{
+    $stmt = $conn->prepare("SELECT students_subjects.id,
+                            students_subjects.student_id,
+                            students_subjects.subject_id,
+                            students_subjects.approved,
+                            students.fullname AS student_fullname,
+                            subjects.name AS subject_name
+                            FROM students_subjects
+                            JOIN subjects ON students_subjects.subject_id = subjects.id
+                            JOIN students ON students_subjects.student_id = students.id
+                            LIMIT ? OFFSET ?");
+    $stmt->bind_param("ii", $limit, $offset);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+//2.0
+function getTotalStudentsSubjects($conn) 
+{
+    $sql = "SELECT COUNT(*) AS total FROM students_subjects";
+    $result = $conn->query($sql);
+    return $result->fetch_assoc()['total'];
+}
+
+
 //Query escrita con ALIAS resumidos:
 function getSubjectsByStudent($conn, $student_id) 
 {
@@ -74,28 +102,5 @@ function removeStudentSubject($conn, $id)
     $stmt->execute();
 
     return ['deleted' => $stmt->affected_rows];
-}
-
-function isStudentAssignedToSubjects($conn, $student_id): bool 
-{
-    // 1. Consulta SQL: Solo cuenta filas y solo necesita encontrar una.
-    $sql = "SELECT 1 FROM students_subjects WHERE student_id = ? LIMIT 1";
-    // Nota: Usamos SELECT 1 en lugar de COUNT(*) porque es marginalmente más rápido 
-    // cuando solo necesitamos saber si existe *algo* y no el total.
-    
-    // 2. Prepara la sentencia: Previene inyección SQL.
-    $stmt = $conn->prepare($sql);
-    
-    // 3. Asocia el parámetro: 'i' indica que el valor es un entero (integer).
-    $stmt->bind_param("i", $student_id);
-    
-    // 4. Ejecuta la consulta.
-    $stmt->execute();
-    
-    // 5. Obtiene el resultado: Usamos store_result() y num_rows para ver si encontró algo.
-    $stmt->store_result(); 
-    
-    // 6. Retorna la verificación: Si el número de filas es > 0, devuelve TRUE (está asignado).
-    return $stmt->num_rows > 0;
 }
 ?>
