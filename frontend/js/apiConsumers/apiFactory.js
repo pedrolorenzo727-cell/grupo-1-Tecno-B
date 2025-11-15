@@ -21,6 +21,7 @@ export function createAPI(moduleName, config = {})
             body: JSON.stringify(data)
         });
 
+
         // --- INICIO DE MODIFICACIÓN DE MANEJO DE ERRORES ---
         if (!res.ok) {
             // 1. Intentamos leer el JSON del cuerpo (donde está nuestro mensaje de error)
@@ -43,10 +44,6 @@ export function createAPI(moduleName, config = {})
             throw new Error(errorMessage); 
         }
         // --- FIN DE MODIFICACIÓN DE MANEJO DE ERRORES ---
-        
-        // Si res.ok es true, devuelve el éxito.
-        return await res.json();
-    }
 
     return {
         async fetchAll()
@@ -77,4 +74,14 @@ export function createAPI(moduleName, config = {})
             return await sendJSON('DELETE', { id });
         }
     };
+}
+export function showAlert(message) {
+    const alertBox = document.createElement("div");
+    alertBox.className = 'alert';
+    alertBox.textContent = message;
+    document.body.appendChild(alertBox);
+
+    setTimeout(() => {
+        alertBox.remove();
+    }, 4000);
 }

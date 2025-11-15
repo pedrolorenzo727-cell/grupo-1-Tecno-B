@@ -17,7 +17,6 @@ require_once("./repositories/studentsSubjects.php");
 //https://www.php.net/manual/es/language.variables.superglobals.php
 function handleGet($conn) 
 {
-    $input = json_decode(file_get_contents("php://input"), true);
     if (isset($_GET['id'])) 
     {
         $student = getStudentById($conn, $_GET['id']);

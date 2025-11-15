@@ -6,7 +6,7 @@
 *    License     : http://www.gnu.org/licenses/gpl.txt  GNU GPL 3.0
 *    Date        : Mayo 2025
 *    Status      : Prototype
-*    Iteration   : 1.0 ( prototype )
+*    Iteration   : 3.0 ( prototype )
 */
 
 require_once("./repositories/subjects.php");
@@ -17,29 +17,28 @@ function handleGet($conn)
 
     if (isset($input['id'])) 
     {
-        $subject = getSubjectById($conn, $input['id']);
+        $subjects = getSubjectById($conn, $input['id']);
         echo json_encode($subject);
     } 
-    else 
+    //2.0
+    else if (isset($_GET['page']) && isset($_GET['limit'])) 
     {
-        $subjects = getAllSubjects($conn);
-        echo json_encode($subjects);
+        $page = (int)$_GET['page'];
+        $limit = (int)$_GET['limit'];
+        $offset = ($page - 1) * $limit;
+
+        $subjects = getPaginatedSubjects($conn, $limit, $offset);
+        $total = getTotalSubjects($conn);
+
+        echo json_encode([
+            'subjects' => $subjects, // ya es array
+            'total' => $total        // ya es entero
+        ]);
     }
-}
-
-function handlePost($conn) 
-{
-    $input = json_decode(file_get_contents("php://input"), true);
-
-    $result = createSubject($conn, $input['name']);
-    if ($result['inserted'] > 0) 
+    else
     {
-        echo json_encode(["message" => "Materia creada correctamente"]);
-    } 
-    else 
-    {
-        http_response_code(500);
-        echo json_encode(["error" => "No se pudo crear"]);
+        $subjects = getAllSubjects($conn); // ya es array
+        echo json_encode($subjects);
     }
 }
 
@@ -64,14 +63,54 @@ function handleDelete($conn)
     $input = json_decode(file_get_contents("php://input"), true);
     
     $result = deleteSubject($conn, $input['id']);
+    //3.0
+    if (isset($result['error'])) {
+        http_response_code(400); 
+        echo json_encode(["error" => $result['error']]);
+        return;
+    }
+    
     if ($result['deleted'] > 0) 
     {
-        echo json_encode(["message" => "Materia eliminada correctamente"]);
+      echo json_encode(["message" => "Materia eliminada correctamente"]);
     } 
     else 
-    {
+      {
         http_response_code(500);
         echo json_encode(["error" => "No se pudo eliminar"]);
+      }
+}
+
+
+
+//TRABAJO PRACTICO GRUPAL 3.0 Ivan Yungblut
+// Busca una materia por su nombre (para validación de duplicados) de forma case insensitive
+function handlePost($conn) {
+    $input = json_decode(file_get_contents("php://input"), true);
+    if (empty($input['name'])) {
+        echo json_encode(["error" => "El nombre de la materia es requerido"]);
+        http_response_code(400); // Bad Request
+        return;
+    }
+
+    // --- VALIDACION BACKEND ---
+
+    $existingSubject = getSubjectByName($conn, $input['name']);
+    if ($existingSubject) {
+        echo json_encode(["error" => "La materia ya existe (back)"]);
+        http_response_code(409); // HTTP 409 (Conflict) es el código perfecto para "ya existe"
+        return;
+    }
+
+    // --- VALIDACION BACKEND ---
+    
+    $result = createSubject($conn, $input['name']);
+    if ($result['inserted'] > 0) {
+        echo json_encode(["message" => "Materia creada correctamente"]);
+    } 
+    else {
+        http_response_code(500);
+        echo json_encode(["error" => "No se pudo crear por un error interno"]);
     }
 }
 ?>

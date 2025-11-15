@@ -13,8 +13,33 @@ require_once("./repositories/studentsSubjects.php");
 
 function handleGet($conn) 
 {
-    $studentsSubjects = getAllSubjectsStudents($conn);
-    echo json_encode($studentsSubjects);
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    if (isset($input['id'])) 
+    {
+        $studentsSubjects = getSubjectById($conn, $input['id']);
+        echo json_encode($subject);
+    } 
+    //2.0
+    else if (isset($_GET['page']) && isset($_GET['limit'])) 
+    {
+        $page = (int)$_GET['page'];
+        $limit = (int)$_GET['limit'];
+        $offset = ($page - 1) * $limit;
+
+        $studentsSubjects = getPaginatedStudentsSubjects($conn, $limit, $offset);
+        $total = getTotalStudentsSubjects($conn);
+
+        echo json_encode([
+            'studentsSubjects' => $studentsSubjects, // ya es array
+            'total' => $total        // ya es entero
+        ]);
+    }
+    else
+    {
+        $subjects = getAllSubjectsStudents($conn); // ya es array
+        echo json_encode($subjects);
+    }
 }
 
 function handlePost($conn) 
