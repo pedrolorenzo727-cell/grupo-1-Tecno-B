@@ -178,54 +178,15 @@ function fillForm(student)
 async function confirmDelete(id) 
 {
     if (!confirm('¿Estás seguro que deseas borrar este estudiante?')) return;
- 
-    let result;
+  
     try 
     {
-        // El Factory devuelve un objeto (éxito o 409) o lanza un error (400, 500)
-        result = await studentsAPI.remove(id);
+        await studentsAPI.remove(id);
+        loadStudents();
     } 
     catch (err) 
     {
-        // Captura errores graves (que SÍ lanzaron excepción en sendJSON)
         console.error('Error al borrar:', err.message);
-        alert(`Error fatal al intentar eliminar: ${err.message}`);
-        return; 
-    }
-    
-    // --- LÓGICA DE MANEJO DE RESPUESTA (TU CONSIGNA) ---
-    
-    if (result.success) {
-        // 1. ÉXITO (Eliminación correcta)
-        alert("Estudiante eliminado correctamente.");
-        
-        //SOLO AQUÍ DEBE RECARGARSE LA LISTA
-        loadStudents(); 
-        
-    } else if (result.status === 409) {
-        // 2. FALLO DE VALIDACIÓN (409 Conflict)
-        
-        // NO hay recarga. Muestra el modal W3.CSS
-        displayDeleteError(result.message); 
-        
-    } else {
-        // 3. Otros fallos (si el Factory devolvió un objeto de error distinto a 409)
-        console.error('Error al borrar:', result.message);
-        alert(`Error ${result.status}: ${result.message}`);
     }
 }
-
-function displayDeleteError(message) {
-    // 1. Inyecta el texto del mensaje en el elemento HTML
-    const messageElement = document.getElementById('modalErrorMessage');
-    if (messageElement) {
-        messageElement.innerText = message;
-    }
-    
-    // 2. Hace visible el modal (cambiando el estilo display)
-    const modalElement = document.getElementById('deleteErrorModal');
-    if (modalElement) {
-        modalElement.style.display = 'block';
-    }
-}
-
+  
