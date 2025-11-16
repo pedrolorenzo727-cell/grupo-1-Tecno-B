@@ -175,18 +175,52 @@ function fillForm(student)
     document.getElementById('age').value = student.age;
 }
   
+//Pilar Balbuena 3.0
 async function confirmDelete(id) 
 {
     if (!confirm('¿Estás seguro que deseas borrar este estudiante?')) return;
-  
+    
     try 
     {
-        await studentsAPI.remove(id);
-        loadStudents();
+        const response = await studentsAPI.remove(id); 
+
+        // Si llega aquí, es éxito (200 OK)
+        if (response.ok) {
+            loadStudents(); 
+            alert('Estudiante eliminado con éxito.');
+        } 
+        // Si studentsAPI.remove no rechaza en 404/500, se maneja aquí (aunque la librería parece rechazar)
+        else {
+             const data = await response.json();
+             alert('Error al borrar: ' + data.message);
+        }
+
     } 
     catch (err) 
     {
-        console.error('Error al borrar:', err.message);
+        // 🛑 LÓGICA DE CAPTURA DEL ERROR 409 DENTRO DEL CATCH:
+        // Verificamos si el error (err) es el objeto de respuesta HTTP
+        if (err && err.status === 409) {
+            
+            let errorMessage = "Error: El estudiante está asignado a una o más asignaturas.";
+            
+            try {
+                // Leemos el cuerpo del error para obtener el mensaje del Backend
+                const data = await err.json();
+                errorMessage = data.message;
+            } catch (e) {
+                // Si la lectura del JSON falla, usamos el mensaje de fallback
+            }
+            
+            // Mostrar el mensaje garantizado
+            alert("⚠️ Error de Borrado:\n\n" + errorMessage);
+            return; // Detenemos la ejecución después de mostrar la alerta
+        }
+        
+        // Código original de tus compañeros para errores de red o fallos genéricos
+        console.error('Error de red/petición:', err.message); 
+        alert('Ocurrió un error de conexión o servidor. (Fallo general)');
     }
 }
+
   
