@@ -9,6 +9,26 @@
 *    Iteration   : 1.0 ( prototype )
 */
 
+//Pilar Balbuena 3.0
+
+function studentHasAssignments($conn, $studentId) 
+{
+    //CAMBIO CLAVE: Usar '?' en lugar de ':student_id'
+    $sql = "SELECT COUNT(*) FROM students_subjects WHERE student_id = ?";
+    
+    // (Línea 20, donde está ocurriendo el error)
+    $stmt = $conn->prepare($sql); 
+    
+    // El resto del código que usa bind_param y get_result ya es correcto para mysqli
+    $stmt->bind_param("i", $studentId); 
+    $stmt->execute();
+    
+    $result = $stmt->get_result();
+    $count = $result->fetch_row()[0];
+    
+    return $count > 0;
+}
+
 function assignSubjectToStudent($conn, $student_id, $subject_id, $approved) 
 {
     $sql = "INSERT INTO students_subjects (student_id, subject_id, approved) VALUES (?, ?, ?)";

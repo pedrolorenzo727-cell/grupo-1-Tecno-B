@@ -74,12 +74,26 @@ function handlePut($conn)
     }
 }
 
+//Pilar Balbuena 3.0
 function handleDelete($conn) 
 {
     $input = json_decode(file_get_contents("php://input"), true);
+    $id = $input['id']; // Usamos 'id' directamente del input para claridad
 
-    $result = deleteStudent($conn, $input['id']);
-    if ($result['deleted'] > 0) 
+    $result = deleteStudent($conn, $id);
+
+    // ==========================================================
+    // NUEVA LÓGICA: Manejo del Error de Restricción (409 Conflict)
+    // Esto previene que se acceda a $result['deleted'] si hay un error de validación.
+    if (isset($result['error'])) {
+        http_response_code(409); // Código HTTP para conflicto o regla de negocio violada
+        echo json_encode(['message' => $result['message']]);
+        return; // ¡DETENER la ejecución aquí!
+    }
+    // ==========================================================
+    
+    // CÓDIGO ORIGINAL DE TUS COMPAÑEROS (Sólo se ejecuta si NO hay error de restricción)
+    if (isset($result['deleted']) && $result['deleted'] > 0) // Añadimos 'isset' para robustez
     {
         echo json_encode(["message" => "Eliminado correctamente"]);
     } 

@@ -8,6 +8,7 @@
 *    Status      : Prototype
 *    Iteration   : 2.0 ( prototype )
 */
+require_once("studentsSubjects.php");
 
 function getAllStudents($conn) 
 {
@@ -73,14 +74,26 @@ function updateStudent($conn, $id, $fullname, $email, $age)
     return ['updated' => $stmt->affected_rows];
 }
 
+//Pilar Balbuena 3.0
+
 function deleteStudent($conn, $id) 
 {
+    // Llama a la función de verificación. Si TRUE, retorna un error de restricción.
+    if (studentHasAssignments($conn, $id)) { 
+        // Retornamos un mensaje de error que el Controller debe manejar
+        return [
+            'error' => true, 
+            'message' => 'El estudiante está asignado a una o más asignaturas y no puede ser eliminado.'
+        ];
+    }
+    
+    // CÓDIGO ORIGINAL DE TUS COMPAÑEROS (Solo se ejecuta si la validación falla arriba)
     $sql = "DELETE FROM students WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
     $stmt->execute();
 
-    //Se retorna fila afectadas para validar en controlador
+    // Se retorna fila afectadas para validar en controlador
     return ['deleted' => $stmt->affected_rows];
 }
 ?>
