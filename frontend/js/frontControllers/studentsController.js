@@ -186,23 +186,22 @@ async function confirmDelete(id)
 {
     if (!confirm('¿Estás seguro que deseas borrar este estudiante?')) return;
     
-    try 
+    try
     {
-        const response = await studentsAPI.remove(id); 
-
-        // Si llega aquí, es éxito (200 OK)
-        if (response.ok) {
-            loadStudents(); 
-            alert('Estudiante eliminado con éxito.');
-        } 
-        // Si studentsAPI.remove no rechaza en 404/500, se maneja aquí (aunque la librería parece rechazar)
-        else {
-             const data = await response.json();
-             alert('Error al borrar: ' + data.message);
+        const data = await studentsAPI.remove(id); 
+        //FIX try - nuevo manejo de respuesta de API, para manejar data como json ... en lugar de un response de fetch.
+        if (data.error) {
+            alert(data.error); 
         }
-
+        else if (data.message) {
+            alert(data.message);
+            loadStudents(); 
+        }
+        else {
+            alert('Ocurrió un error inesperado al eliminar el estudiante.');
+        }
     } 
-    catch (err) 
+    catch (err)
     {
         // 🛑 LÓGICA DE CAPTURA DEL ERROR 409 DENTRO DEL CATCH:
         // Verificamos si el error (err) es el objeto de respuesta HTTP
