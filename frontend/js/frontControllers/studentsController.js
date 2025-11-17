@@ -50,7 +50,6 @@ function setupFormHandler()
             }
             clearForm();
             loadStudents();
-            showSuccess('Estudiante guardado correctamente.');
         }
         catch (err)
         {
@@ -225,7 +224,7 @@ async function confirmDelete(id)
         }
         
         // Código original de tus compañeros para errores de red o fallos genéricos
-        console.error('Error de red/petición:', err.message); 
+        //console.error('Error de red/petición:', err.message); 
         alert('Ocurrió un error de conexión o servidor. (Fallo general)');
     }
 }

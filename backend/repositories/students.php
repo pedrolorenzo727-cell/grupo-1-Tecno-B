@@ -72,8 +72,7 @@ function validateMail($conn, $email)
     $stmt->bind_result($count);
     $stmt->fetch();
     $stmt->close();
-
-    // Si ya existe devuelve 1, si no, 0
+    // Devuelve 1 si existe, 0 si no
     return $count > 0 ? 1 : 0;
 }
 
