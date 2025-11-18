@@ -5,23 +5,16 @@
 *    License     : http://www.gnu.org/licenses/gpl.txt  GNU GPL 3.0
 *    Date        : Mayo 2025
 *    Status      : Prototype
-*    Iteration   : 2.0 ( prototype )
+*    Iteration   : 3.0 ( prototype )
 */
 
-import { studentsAPI } from '../apiConsumers/studentsAPI.js';
-
-//2.0
-//For pagination:
-let currentPage = 1;
-let totalPages = 1;
-const limit = 5;
+import { studentsAPI } from '../api/studentsAPI.js';
 
 document.addEventListener('DOMContentLoaded', () => 
 {
     loadStudents();
     setupFormHandler();
     setupCancelHandler();
-    setupPaginationControls();//2.0
 });
   
 function setupFormHandler()
@@ -40,16 +33,14 @@ function setupFormHandler()
             } 
             else 
             {
-                try {
-                    await studentsAPI.create(student);
-                }
+                try {await studentsAPI.create(student)}
                 catch (e){
-                    showError("El correo ingresado ya existe. Intente con otro.");
-                    return;
-                }
+                    showError("El correo ingresado ya existe. Intente con otro.")
+                    return;}
             }
             clearForm();
             loadStudents();
+            showSuccess('Estudiante guardado correctamente.');
         }
         catch (err)
         {
@@ -64,34 +55,6 @@ function setupCancelHandler()
     cancelBtn.addEventListener('click', () => 
     {
         document.getElementById('studentId').value = '';
-    });
-}
-
-//2.0
-function setupPaginationControls() 
-{
-    document.getElementById('prevPage').addEventListener('click', () => 
-    {
-        if (currentPage > 1) 
-        {
-            currentPage--;
-            loadStudents();
-        }
-    });
-
-    document.getElementById('nextPage').addEventListener('click', () => 
-    {
-        if (currentPage < totalPages) 
-        {
-            currentPage++;
-            loadStudents();
-        }
-    });
-
-    document.getElementById('resultsPerPage').addEventListener('change', e => 
-    {
-        currentPage = 1;
-        loadStudents();
     });
 }
   
@@ -110,18 +73,13 @@ function clearForm()
     document.getElementById('studentForm').reset();
     document.getElementById('studentId').value = '';
 }
-
-//2.0
+  
 async function loadStudents()
 {
     try 
     {
-        const resPerPage = parseInt(document.getElementById('resultsPerPage').value, 10) || limit;
-        const data = await studentsAPI.fetchPaginated(currentPage, resPerPage);
-        console.log(data);
-        renderStudentTable(data.students);
-        totalPages = Math.ceil(data.total / resPerPage);
-        document.getElementById('pageInfo').textContent = `Página ${currentPage} de ${totalPages}`;
+        const students = await studentsAPI.fetchAll();
+        renderStudentTable(students);
     } 
     catch (err) 
     {
@@ -181,54 +139,18 @@ function fillForm(student)
     document.getElementById('age').value = student.age;
 }
   
-//Pilar Balbuena 3.0
 async function confirmDelete(id) 
 {
     if (!confirm('¿Estás seguro que deseas borrar este estudiante?')) return;
-    
-    try
+  
+    try 
     {
-        const data = await studentsAPI.remove(id); 
-        //FIX try - nuevo manejo de respuesta de API, para manejar data como json ... en lugar de un response de fetch.
-        if (data.error) {
-            alert(data.error); 
-        }
-        else if (data.message) {
-            alert(data.message);
-            loadStudents(); 
-        }
-        else {
-            alert('Ocurrió un error inesperado al eliminar el estudiante.');
-        }
+        await studentsAPI.remove(id);
+        loadStudents();
     } 
-    catch (err)
+    catch (err) 
     {
-        // LÓGICA DE CAPTURA DEL ERROR 409 DENTRO DEL CATCH:
-        // Verificamos si el error (err) es el objeto de respuesta HTTP
-        if (err && err.status === 409) {
-            
-            let errorMessage = "Error: El estudiante está asignado a una o más asignaturas.";
-            
-            try {
-                // Leemos el cuerpo del error para obtener el mensaje del Backend
-                const data = await err.json();
-                errorMessage = data.message;
-            } catch (e) {
-                // Si la lectura del JSON falla, usamos el mensaje de fallback
-            }
-            
-            document.getElementById('deleteErrorMessageText').textContent = "⚠️ " + errorMessage;
-
-            // 2. Mostrar el modal (usando el ID del div principal)
-            document.getElementById('deleteErrorModal').style.display = 'block';
-
-            return; // Detenemos la ejecución después de mostrar la alerta
-        }
-        
-        // Código original de tus compañeros para errores de red o fallos genéricos
-        //console.error('Error de red/petición:', err.message); 
-        alert('Ocurrió un error de conexión o servidor. (Fallo general)');
+        console.error('Error al borrar:', err.message);
     }
 }
-
   

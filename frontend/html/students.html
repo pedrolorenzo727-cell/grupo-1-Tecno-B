@@ -85,6 +85,28 @@
         </footer>
     </div>
 </div>
+   <!-- 📢 Modal para mostrar errores -->
+   <div id="errorModal" class="w3-modal">
+    <div class="w3-modal-content w3-animate-top w3-card-4">
+      <header class="w3-container w3-red">
+        <span 
+          onclick="document.getElementById('errorModal').style.display='none'" 
+          class="w3-button w3-display-topright">&times;</span>
+        <h3>Error</h3>
+      </header>
+      <div class="w3-container">
+        <p id="errorModalMsg"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📜 Script para manejar el modal -->
+  <script>
+    function showError(msg) {
+      document.getElementById('errorModalMsg').textContent = msg;
+      document.getElementById('errorModal').style.display = 'block';
+    }
+  </script>
   
 </body>
 </html>

@@ -63,6 +63,19 @@ function createStudent($conn, $fullname, $email, $age)
     ];
 }
 
+function validateMail($conn, $email) 
+{
+    $sql = "SELECT COUNT(*) FROM students WHERE email = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+    // Devuelve 1 si existe, 0 si no
+    return $count > 0 ? 1 : 0;
+}
+
 function updateStudent($conn, $id, $fullname, $email, $age) 
 {
     $sql = "UPDATE students SET fullname = ?, email = ?, age = ? WHERE id = ?";
