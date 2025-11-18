@@ -198,7 +198,7 @@ async function confirmDelete(id)
     } 
     catch (err) 
     {
-        // 🛑 LÓGICA DE CAPTURA DEL ERROR 409 DENTRO DEL CATCH:
+        // LÓGICA DE CAPTURA DEL ERROR 409 DENTRO DEL CATCH:
         // Verificamos si el error (err) es el objeto de respuesta HTTP
         if (err && err.status === 409) {
             
@@ -212,8 +212,11 @@ async function confirmDelete(id)
                 // Si la lectura del JSON falla, usamos el mensaje de fallback
             }
             
-            // Mostrar el mensaje garantizado
-            alert("⚠️ Error de Borrado:\n\n" + errorMessage);
+            document.getElementById('deleteErrorMessageText').textContent = "⚠️ " + errorMessage;
+
+            // 2. Mostrar el modal (usando el ID del div principal)
+            document.getElementById('deleteErrorModal').style.display = 'block';
+
             return; // Detenemos la ejecución después de mostrar la alerta
         }
         
